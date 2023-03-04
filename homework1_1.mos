@@ -1,0 +1,59 @@
+model CarRental
+  options noimplicit
+  uses "mmxprs"
+
+  declarations
+  
+    !x: array(i) of mpvar
+    x1,x2,x3,x4 : mpvar  ! x21,x24...x65 까지 decision variable 을 선언한다.
+    g_constr1, g_constr2, g_constr3,g_constr4,g_constr5,c1,c2,c3,c4,c5,c6,c7 ,c8: linctr     !렌트카를 초과 보관 중인 지점이 가지는 제약식을 선언한다.
+    !t_constr1, t_constr4, t_constr5 : linctr     !렌트카가 부족한 지점이 가지는 제약식을 선언한다.
+    minCost : linctr                             !objective funciton 을 선언한다.
+  end-declarations
+  !x1 is_binary
+  !x2 is_binary
+  !x3 is_binary
+  !x4 is_binary
+  minCost := 7*x1 + 12*x2 + 5*x3 + 14*x4  ! objective funciton 을 선형식으로 정의한다.
+  g_constr1 := 3*x1 + 6*x2 + 5*x3 + 16*x4 >= 7 !지점2가 가지는 제약식을 정의
+  g_constr2 := x1 <= 1 !지점3이 가지는 제약식을 정의
+  g_constr3 := x2 <= 1
+  g_constr4 := x3 <=1
+  g_constr5 := x4<=1
+  c1 := x1>=0
+  c2 := x2>=0
+  c3 := x3>=0
+  c4 := x4>=0
+  c5:= x4<=0
+  !c6:= x2<=0
+  !c7:= x1<=0
+  !c8:= x3<=0
+  !t_constr1 := x21 + x31 + x61 >= 4 !지점1이 가지는 제약식을 정의
+  !t_constr4 := x24 + x34 + x64 >= 4 !지점4가 가지는 제약식을 정의
+  !t_constr5 := x25 + x35 + x65 >= 7 !지점5가 가지는 제약식을 정의
+
+  !setparam('XPRS_VERBOSE', true)
+  minimise(minCost) !문제를 푼다.
+
+  if (getprobstat = XPRS_INF) then
+    writeln("infeasible")
+    exit(1)
+  else  
+    writeln("Min Cost = ", getobjval) !objective value를 확인하고 출력한다.
+
+    writeln("x1 = ", x1.sol) !decision variable의 값을 확인하고 출력한다.
+    writeln("x2 = ", x2.sol)
+    writeln("x3 = ", x3.sol)
+    writeln("x4 = ", x4.sol)
+    !writeln("x34 = ", x34.sol)
+    !writeln("x35 = ", x35.sol)
+    !writeln("x61 = ", x61.sol)
+    !writeln("x64 = ", x64.sol)
+    !writeln("x65 = ", x65.sol)
+  end-if
+
+  !exportprob(EP_MIN, "hwout.txt", minCost) !코드에서 만들어지는 model을 출력한다.
+end-model
+
+
+
